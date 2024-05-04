@@ -1,4 +1,4 @@
-package solver
+package day01
 
 func SolveCaptcha(numbers string) int {
 	totalLen := len(numbers)

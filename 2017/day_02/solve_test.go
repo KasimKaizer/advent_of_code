@@ -1,10 +1,10 @@
-// nolint: all
+//nolint: all
 package day02_test
 
 import (
 	"testing"
 
-	. "advent_of_code/2017/day_02"
+	. "github.com/KasimKaizer/advent_of_code/2017/day_02"
 )
 
 type tests struct {
@@ -16,28 +16,28 @@ type tests struct {
 var testCasesOne = []tests{
 	{
 		"First example case",
-		"", // add example input here.
-		"", // add example expected here.
+		"", // add example input here. 
+        "", // add example expected here.
 	},
 
 	{
 		"Problem case",
-		"", // add actual test input here.
-		"", // add actual test expected here.
+        "", // add actual test input here.
+        "", // add actual test expected here.
 	},
 }
 
 var testCasesTwo = []tests{
 	{
 		"First example case",
-		"", // add example input here.
-		"", // add example expected here.
+		"", // add example input here. 
+        "", // add example expected here.
 	},
 
 	{
 		"Problem case",
-		"", // add actual test input here.
-		"", // add actual test  expected here.
+        "", // add actual test input here.
+        "", // add actual test  expected here.
 	},
 }
 

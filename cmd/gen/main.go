@@ -44,6 +44,8 @@ func main() {
 
 	dirPath := filepath.Join(cfg.Year, fmt.Sprintf("day_%s", cfg.Day))
 
+	// TODO: move the code from here into a function, it doesn't make sense that
+	// its all here. just run the function is dir doesn't exist.
 	if _, err := os.Stat(dirPath); errors.Is(err, os.ErrNotExist) {
 		err = os.MkdirAll(dirPath, os.ModePerm)
 		if err != nil {
@@ -79,4 +81,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// TODO: implement getting input, as well as creating a README
 }

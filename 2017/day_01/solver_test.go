@@ -1,10 +1,10 @@
 // nolint: all
-package solver_test
+package day01_test
 
 import (
 	"testing"
 
-	. "advent_of_code/2017/day_1"
+	. "github.com/KasimKaizer/advent_of_code/2017/day_01"
 )
 
 type tests struct {
