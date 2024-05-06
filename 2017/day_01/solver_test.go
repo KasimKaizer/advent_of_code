@@ -92,3 +92,10 @@ func TestSolveCaptcha(t *testing.T) {
 func TestSolveCaptchaTwo(t *testing.T) {
 	runTests(t, SolveCaptchaTwo, "SolveCaptchaTwo", testCasesTwo)
 }
+
+func runBenchmark(b *testing.B, ops func(any) any, funcName string, test []tests) {
+	if testing.Short() {
+		b.Skip("skipping benchmark in short mode.")
+	}
+
+}
