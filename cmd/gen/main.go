@@ -51,7 +51,7 @@ func main() {
 	if len(cfg.Day) == 1 {
 		cfg.Day = fmt.Sprintf("0%s", cfg.Day)
 	}
-	if len(cfg.Year) == 2 { //nolint: gomnd // not reused.
+	if len(cfg.Year) == 2 { //nolint: gomnd // number not reused.
 		cfg.Year = fmt.Sprintf("20%s", cfg.Year)
 	}
 
@@ -90,7 +90,7 @@ func (c *Config) createTemplate(dirPath string) error {
 	}
 	defer solveTestFile.Close()
 
-	ts, err := template.ParseFiles("/Users/kaizersuterwala/go/src/advent_of_code/cmd/gen/templates/solve.tmpl")
+	ts, err := template.ParseFiles("cmd/gen/templates/solve.tmpl")
 	if err != nil {
 		return err
 	}
@@ -99,16 +99,12 @@ func (c *Config) createTemplate(dirPath string) error {
 		return err
 	}
 
-	ts, err = template.ParseFiles("/Users/kaizersuterwala/go/src/advent_of_code/cmd/gen/templates/solve_test.tmpl")
+	ts, err = template.ParseFiles("cmd/gen/templates/solve_test.tmpl")
 	if err != nil {
 		return err
 	}
 	err = ts.ExecuteTemplate(solveTestFile, "test", c)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func (c *Config) getInput(w io.Writer) error {
