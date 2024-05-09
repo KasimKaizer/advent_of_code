@@ -75,7 +75,7 @@ func main() {
 		}
 		err := cfg.submitAnswer(*answer, *partNum)
 		handleErr(err)
-		fmt.Printf("Congratulations! You have answer the Part %d correctly!", *partNum) //nolint:forbidigo // needed
+		fmt.Printf("Congratulations! You have answered the Part %d correctly!", *partNum) //nolint:forbidigo // needed.
 		os.Exit(0)
 	}
 
@@ -97,7 +97,7 @@ func main() {
 
 func (c *Config) submitAnswer(answer string, part int) error {
 	if part < 1 || part > 2 {
-		return errors.New("submitCmd: incorrect part number")
+		return errors.New("submitAnswer: incorrect part number")
 	}
 	form := url.Values{}
 	form.Add("level", strconv.Itoa(part))
@@ -117,7 +117,6 @@ func (c *Config) submitAnswer(answer string, part int) error {
 		return err
 	}
 	// TODO: handle correct answer, wrong answer and cool down individually.
-	fmt.Print(buffer.String())
 	if !strings.Contains(buffer.String(), "That's the right answer!") {
 		return errors.New("the answer provided is incorrect")
 	}
