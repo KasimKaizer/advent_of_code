@@ -2,12 +2,14 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -44,15 +46,37 @@ func main() {
 	flag.StringVar(&cfg.Year, "y", cfg.Year, "short cut for year command")
 	flag.StringVar(&cfg.Day, "day", strconv.Itoa(time.Now().Day()), "The day of the event")
 	flag.StringVar(&cfg.Day, "d", cfg.Day, "short cut for day command")
+
+	isSubmit := flag.Bool("submit", false, "submit the answer")
+	flag.BoolVar(isSubmit, "s", *isSubmit, "short cut for submit command")
+	partNum := flag.Int("part", 1, "problem part")
+	flag.IntVar(partNum, "p", *partNum, "short cut for part command")
+	answer := flag.String("answer", "", "answer for the solution")
+	flag.StringVar(answer, "a", *answer, "short cut for answer command")
 	flag.Parse()
+
 	cfg.path = os.Getenv("AOC_PATH")
 	cfg.session = os.Getenv("AOC_SESSION")
+
+	if cfg.session == "" || cfg.path == "" {
+		log.Fatal("AOC_PATH or AOC_SESSION env variable cannot be empty")
+	}
 
 	if len(cfg.Day) == 1 {
 		cfg.Day = fmt.Sprintf("0%s", cfg.Day)
 	}
 	if len(cfg.Year) == 2 { //nolint: gomnd // number not reused.
 		cfg.Year = fmt.Sprintf("20%s", cfg.Year)
+	}
+
+	if *isSubmit {
+		if *answer == "" {
+			*answer = flag.Args()[len(flag.Args())-1]
+		}
+		err := cfg.submitAnswer(*answer, *partNum)
+		handleErr(err)
+		fmt.Printf("Congratulations! You have answer the Part %d correctly!", *partNum) //nolint:forbidigo // needed
+		os.Exit(0)
 	}
 
 	dirPath := filepath.Join(cfg.path, cfg.Year, fmt.Sprintf("day_%s", cfg.Day))
@@ -69,6 +93,35 @@ func main() {
 	readME, err := os.OpenFile(readMEFile, os.O_CREATE|os.O_RDWR, 0644)
 	handleErr(err)
 	handleErr(cfg.getSpec(readME))
+}
+
+func (c *Config) submitAnswer(answer string, part int) error {
+	if part < 1 || part > 2 {
+		return errors.New("submitCmd: incorrect part number")
+	}
+	form := url.Values{}
+	form.Add("level", strconv.Itoa(part))
+	form.Add("answer", answer)
+	day := c.Day
+	if day[0] == '0' {
+		day = day[1:]
+	}
+	aocURL := fmt.Sprintf("https://adventofcode.com/%s/day/%s/answer", c.Year, day)
+	resp, err := c.getResponse(http.MethodPost, aocURL, strings.NewReader(form.Encode()))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	buffer, err := praseHTML(resp.Body, "article")
+	if err != nil {
+		return err
+	}
+	// TODO: handle correct answer, wrong answer and cool down individually.
+	fmt.Print(buffer.String())
+	if !strings.Contains(buffer.String(), "That's the right answer!") {
+		return errors.New("the answer provided is incorrect")
+	}
+	return nil
 }
 
 func (c *Config) createTemplate(dirPath string) error {
@@ -90,7 +143,7 @@ func (c *Config) createTemplate(dirPath string) error {
 	}
 	defer solveTestFile.Close()
 
-	ts, err := template.ParseFiles("cmd/gen/templates/solve.tmpl")
+	ts, err := template.ParseFiles("cmd/gen/templates/solve.gotmpl")
 	if err != nil {
 		return err
 	}
@@ -99,7 +152,7 @@ func (c *Config) createTemplate(dirPath string) error {
 		return err
 	}
 
-	ts, err = template.ParseFiles("cmd/gen/templates/solve_test.tmpl")
+	ts, err = template.ParseFiles("cmd/gen/templates/solve_test.gotmpl")
 	if err != nil {
 		return err
 	}
@@ -112,7 +165,8 @@ func (c *Config) getInput(w io.Writer) error {
 	if day[0] == '0' {
 		day = day[1:]
 	}
-	resp, err := c.getResponse(fmt.Sprintf("https://adventofcode.com/%s/day/%s/input", c.Year, day))
+	aocURL := fmt.Sprintf("https://adventofcode.com/%s/day/%s/input", c.Year, day)
+	resp, err := c.getResponse(http.MethodGet, aocURL, nil)
 	if err != nil {
 		return err
 	}
@@ -129,7 +183,8 @@ func (c *Config) getSpec(w io.Writer) error {
 	if day[0] == '0' {
 		day = day[1:]
 	}
-	resp, err := c.getResponse(fmt.Sprintf("https://adventofcode.com/%s/day/%s", c.Year, day))
+	aocURL := fmt.Sprintf("https://adventofcode.com/%s/day/%s", c.Year, day)
+	resp, err := c.getResponse(http.MethodGet, aocURL, nil)
 	if err != nil {
 		return err
 	}
@@ -141,33 +196,14 @@ func (c *Config) getSpec(w io.Writer) error {
 	if !strings.HasPrefix(cType, "text/html") {
 		return errors.New("getSpec: did not get text/html")
 	}
-	tokenizer := html.NewTokenizer(resp.Body)
-	output := new(bytes.Buffer)
-	isArticle := false
-	for {
-		tokenType := tokenizer.Next()
-		if tokenType == html.ErrorToken {
-			if err = tokenizer.Err(); !errors.Is(err, io.EOF) {
-				return err
-			}
-			break
-		}
-		token := tokenizer.Token()
-		if tokenType == html.StartTagToken && token.Data == "article" {
-			isArticle = true
-			continue
-		}
-		if tokenType == html.EndTagToken && token.Data == "article" {
-			isArticle = false
-		}
-		if !isArticle {
-			continue
-		}
-		output.WriteString(html.UnescapeString(token.String()))
+
+	respData, err := praseHTML(resp.Body, "article")
+	if err != nil {
+		return err
 	}
-	converter := md.NewConverter("", true, &md.Options{EscapeMode: "basic"}) //nolint:exhaustruct // not needed
+	converter := md.NewConverter(aocURL, true, nil)
 	converter.Use(plugin.GitHubFlavored())
-	buf, err := converter.ConvertReader(output)
+	buf, err := converter.ConvertReader(respData)
 	if err != nil {
 		return err
 	}
@@ -175,18 +211,53 @@ func (c *Config) getSpec(w io.Writer) error {
 	return err
 }
 
-func (c *Config) getResponse(aocURL string) (*http.Response, error) {
-	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodGet, aocURL, nil)
+func (c *Config) getResponse(method string, aocURL string, body io.Reader) (*http.Response, error) {
+	ctx, done := context.WithTimeout(
+		context.Background(),
+		5*time.Second) //nolint: gomnd // not reused.
+	defer done()
+	req, err := http.NewRequestWithContext(ctx, method, aocURL, body)
 	if err != nil {
 		return nil, err
 	}
 	req.AddCookie(&http.Cookie{Name: "session", Value: c.session})
+	if method == http.MethodPost {
+		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	}
+	client := http.DefaultClient
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
+}
+
+func praseHTML(reader io.Reader, tag string) (*bytes.Buffer, error) {
+	tokenizer := html.NewTokenizer(reader)
+	output := new(bytes.Buffer)
+	isArticle := false
+	for {
+		tokenType := tokenizer.Next()
+		if tokenType == html.ErrorToken {
+			if err := tokenizer.Err(); !errors.Is(err, io.EOF) {
+				return nil, err
+			}
+			break
+		}
+		token := tokenizer.Token()
+		if tokenType == html.StartTagToken && token.Data == tag {
+			isArticle = true
+			continue
+		}
+		if tokenType == html.EndTagToken && token.Data == tag {
+			isArticle = false
+		}
+		if !isArticle {
+			continue
+		}
+		output.WriteString(html.UnescapeString(token.String()))
+	}
+	return output, nil
 }
 
 func handleErr(err error) {

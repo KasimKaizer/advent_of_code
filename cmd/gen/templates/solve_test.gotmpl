@@ -64,10 +64,12 @@ func runBenchmark(b *testing.B, ops func(any) any, test []tests) {
 	if testing.Short() {
 		b.Skip("skipping benchmark in short mode.")
 	}
-	for i := 0; i < b.N; i++ {
-		for _, tt := range test {
-			ops(tt.Input)
-		}
+	for _, tc := range test {
+		b.Run(tc.Description, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				ops(tc.Input)
+			}
+		})
 	}
 }
 
@@ -78,4 +80,5 @@ func BenchmarkSolveOne(b *testing.B) {
 func BenchmarkSolveTwo(b *testing.B) {
 	runBenchmark(b, SolveTwo, testCasesTwo)
 }
+
 {{end}}
