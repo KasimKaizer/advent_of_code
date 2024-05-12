@@ -16,13 +16,13 @@ type tests struct {
 var testCasesOne = []tests{
 	{
 		"First example case",
-		"", // add example input here.
+		"base_1.txt", // add example input here.
         "", // add example expected here.
 	},
 
 	{
 		"Problem case",
-        "", // add actual test input here.
+        "input.txt", // add actual test input here.
         "", // add actual test expected here.
 	},
 }
@@ -30,13 +30,13 @@ var testCasesOne = []tests{
 var testCasesTwo = []tests{
 	{
 		"First example case",
-		"", // add example input here.
+		"base_1.txt", // add example input here.
         "", // add example expected here.
 	},
 
 	{
 		"Problem case",
-        "", // add actual test input here.
+        "input.txt", // add actual test input here.
         "", // add actual test  expected here.
 	},
 }
@@ -80,5 +80,4 @@ func BenchmarkSolveOne(b *testing.B) {
 func BenchmarkSolveTwo(b *testing.B) {
 	runBenchmark(b, SolveTwo, testCasesTwo)
 }
-
 {{end}}

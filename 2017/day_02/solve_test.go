@@ -20,7 +20,7 @@ type tests struct {
 var testCasesOne = []tests{
 	{
 		"First example case",
-		"base.txt",
+		"base_1.txt",
 		18,
 	},
 
@@ -34,7 +34,7 @@ var testCasesOne = []tests{
 var testCasesTwo = []tests{
 	{
 		"First example case",
-		"base2.txt",
+		"base_2.txt",
 		9,
 	},
 

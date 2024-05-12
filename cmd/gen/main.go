@@ -30,7 +30,7 @@ import (
 //    done
 // 5) use template to create a basic struct for solving problems. - done somewhat (this would
 //    require trial and error)
-// 6) create a lib dir which implements queue, stack, indexed queue etc etc...
+// 8) create a lib dir which implements queue, stack, indexed queue etc etc...
 // 7) create a lib for parsers
 
 type Config struct {
@@ -83,6 +83,9 @@ func main() {
 	if _, err := os.Stat(dirPath); errors.Is(err, os.ErrNotExist) {
 		handleErr(cfg.createTemplate(dirPath))
 	}
+
+	err := cfg.createBaseCases(dirPath)
+	handleErr(err)
 
 	inputFile := filepath.Join(dirPath, "input.txt")
 	input, err := os.OpenFile(inputFile, os.O_CREATE|os.O_RDWR, 0644)
@@ -177,26 +180,39 @@ func (c *Config) getInput(w io.Writer) error {
 	return err
 }
 
+func (c *Config) createBaseCases(dir string) error {
+	day := c.Day
+	if day[0] == '0' {
+		day = day[1:]
+	}
+	aocURL := fmt.Sprintf("https://adventofcode.com/%s/day/%s", c.Year, day)
+	data, err := c.getHTML(aocURL, "pre", "code")
+	if err != nil {
+		return err
+	}
+	bases := strings.Split(data.String(), "\n\n")
+	for idx, base := range bases[:len(bases)-1] { // the last item would be an empty string.
+		baseFilePath := filepath.Join(dir, fmt.Sprintf("base_%d.txt", idx+1))
+		baseFile, err := os.OpenFile(baseFilePath, os.O_CREATE|os.O_RDWR, 0644) //nolint:govet // false positive
+		if err != nil {
+			return err
+		}
+		_, err = baseFile.WriteString(base)
+		if err != nil {
+			return err
+		}
+		baseFile.Close()
+	}
+	return nil
+}
+
 func (c *Config) getSpec(w io.Writer) error {
 	day := c.Day
 	if day[0] == '0' {
 		day = day[1:]
 	}
 	aocURL := fmt.Sprintf("https://adventofcode.com/%s/day/%s", c.Year, day)
-	resp, err := c.getResponse(http.MethodGet, aocURL, nil)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("getSpec: got status code %d", resp.StatusCode)
-	}
-	cType := resp.Header.Get("Content-Type")
-	if !strings.HasPrefix(cType, "text/html") {
-		return errors.New("getSpec: did not get text/html")
-	}
-
-	respData, err := praseHTML(resp.Body, "article")
+	respData, err := c.getHTML(aocURL, "article")
 	if err != nil {
 		return err
 	}
@@ -231,10 +247,29 @@ func (c *Config) getResponse(method string, aocURL string, body io.Reader) (*htt
 	return resp, nil
 }
 
-func praseHTML(reader io.Reader, tag string) (*bytes.Buffer, error) {
+func (c *Config) getHTML(aocURL string, tags ...string) (*bytes.Buffer, error) {
+	resp, err := c.getResponse(http.MethodGet, aocURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("getHTML: got status code %d", resp.StatusCode)
+	}
+	cType := resp.Header.Get("Content-Type")
+	if !strings.HasPrefix(cType, "text/html") {
+		return nil, errors.New("getHTML: did not get text/html")
+	}
+
+	respData, err := praseHTML(resp.Body, tags...)
+	return respData, err
+}
+
+func praseHTML(reader io.Reader, tag ...string) (*bytes.Buffer, error) {
 	tokenizer := html.NewTokenizer(reader)
 	output := new(bytes.Buffer)
-	isArticle := false
+	content := false
+	startTagIdx, endTagIdx := 0, 0
 	for {
 		tokenType := tokenizer.Next()
 		if tokenType == html.ErrorToken {
@@ -244,14 +279,31 @@ func praseHTML(reader io.Reader, tag string) (*bytes.Buffer, error) {
 			break
 		}
 		token := tokenizer.Token()
-		if tokenType == html.StartTagToken && token.Data == tag {
-			isArticle = true
+		if tokenType == html.StartTagToken && token.Data == tag[startTagIdx] {
+			if startTagIdx == len(tag)-1 {
+				content = true
+			} else {
+				startTagIdx++
+			}
+
+			if startTagIdx != 0 && endTagIdx != len(tag)-1 {
+				endTagIdx++
+			}
 			continue
 		}
-		if tokenType == html.EndTagToken && token.Data == tag {
-			isArticle = false
+		if tokenType == html.EndTagToken && token.Data == tag[endTagIdx] {
+			if startTagIdx == len(tag)-1 {
+				output.WriteString("\n\n")
+			}
+			content = false
+			if startTagIdx > 0 {
+				startTagIdx--
+			}
+			if endTagIdx > 0 {
+				endTagIdx--
+			}
 		}
-		if !isArticle {
+		if !content {
 			continue
 		}
 		output.WriteString(html.UnescapeString(token.String()))
