@@ -2,13 +2,11 @@
 package day02_test
 
 import (
-	"bufio"
 	"os"
-	"strconv"
-	"strings"
 	"testing"
 
 	. "github.com/KasimKaizer/advent_of_code/2017/day_02"
+	"github.com/KasimKaizer/advent_of_code/pkg/parse"
 )
 
 type tests struct {
@@ -45,36 +43,15 @@ var testCasesTwo = []tests{
 	},
 }
 
-func parseInput(path string) ([][]int, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-	scanner := bufio.NewScanner(f)
-	var output [][]int
-	for scanner.Scan() {
-		var row []int
-		splitRow := strings.Fields(scanner.Text())
-		for _, numChar := range splitRow {
-			num, err := strconv.Atoi(numChar)
-			if err != nil {
-				return nil, err
-			}
-			row = append(row, num)
-		}
-		output = append(output, row)
-	}
-	if err := scanner.Err(); err != nil {
-		return nil, err
-	}
-	return output, nil
-}
-
 func runTests(t *testing.T, ops func([][]int) int, funcName string, tests []tests) {
 	for _, tc := range tests {
 		t.Run(tc.Description, func(t *testing.T) {
-			input, err := parseInput(tc.Input)
+			f, err := os.Open(tc.Input)
+			if err != nil {
+				t.Error(err)
+			}
+			defer f.Close()
+			input, err := parse.ToIntMatrix(f)
 			if err != nil {
 				t.Error(err)
 			}
@@ -100,7 +77,12 @@ func runBenchmark(b *testing.B, ops func([][]int) int, test []tests) {
 	}
 	for _, tc := range test {
 		b.Run(tc.Description, func(b *testing.B) {
-			input, err := parseInput(tc.Input)
+			f, err := os.Open(tc.Input)
+			if err != nil {
+				b.Error(err)
+			}
+			defer f.Close()
+			input, err := parse.ToIntMatrix(f)
 			if err != nil {
 				b.Error(err)
 			}

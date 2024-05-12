@@ -145,7 +145,7 @@ func (c *Config) createTemplate(dirPath string) error {
 	}
 	defer solveTestFile.Close()
 
-	ts, err := template.ParseFiles("cmd/gen/templates/solve.gotmpl")
+	ts, err := template.ParseFiles("cmd/cli/templates/solve.gotmpl")
 	if err != nil {
 		return err
 	}
@@ -154,7 +154,7 @@ func (c *Config) createTemplate(dirPath string) error {
 		return err
 	}
 
-	ts, err = template.ParseFiles("cmd/gen/templates/solve_test.gotmpl")
+	ts, err = template.ParseFiles("cmd/cli/templates/solve_test.gotmpl")
 	if err != nil {
 		return err
 	}

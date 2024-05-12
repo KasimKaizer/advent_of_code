@@ -3,7 +3,8 @@ package {{printf "day%s_test" .Day}}
 
 import (
 	"testing"
-
+	
+    // "github.com/KasimKaizer/advent_of_code/pkg/parse"
 	. "{{printf "github.com/KasimKaizer/advent_of_code/%s/day_%s" .Year .Day}}"
 )
 
@@ -44,6 +45,11 @@ var testCasesTwo = []tests{
 func runTests(t *testing.T, ops func(any) any, funcName string, tests []tests) {
 	for _, tc := range tests {
 		t.Run(tc.Description, func(t *testing.T) {
+			f, err := os.Open(tc.Input)
+			if err != nil {
+				t.Error(err)
+			}
+			defer f.Close()
 			got := ops(tc.Input)
 			if got != tc.Expected {
 				t.Fatalf("%s(%v) = %v, expected: %v", funcName, tc.Input, got, tc.Expected)
@@ -66,6 +72,11 @@ func runBenchmark(b *testing.B, ops func(any) any, test []tests) {
 	}
 	for _, tc := range test {
 		b.Run(tc.Description, func(b *testing.B) {
+			f, err := os.Open(tc.Input)
+			if err != nil {
+				b.Error(err)
+			}
+			defer f.Close()
 			for i := 0; i < b.N; i++ {
 				ops(tc.Input)
 			}
