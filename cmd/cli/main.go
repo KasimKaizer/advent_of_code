@@ -80,8 +80,11 @@ func main() {
 	}
 
 	dirPath := filepath.Join(cfg.path, cfg.Year, fmt.Sprintf("day_%s", cfg.Day))
+
+	isInitial := false
 	if _, err := os.Stat(dirPath); errors.Is(err, os.ErrNotExist) {
 		handleErr(cfg.createTemplate(dirPath))
+		isInitial = true
 	}
 
 	err := cfg.createBaseCases(dirPath)
@@ -96,6 +99,11 @@ func main() {
 	readME, err := os.OpenFile(readMEFile, os.O_CREATE|os.O_RDWR, 0644)
 	handleErr(err)
 	handleErr(cfg.getSpec(readME))
+	msgFmt := "Successfully updated Files at:\n%s"
+	if isInitial {
+		msgFmt = "Successfully created:\n%s"
+	}
+	fmt.Printf(msgFmt, dirPath) //nolint:forbidigo // needed.
 }
 
 func (c *Config) submitAnswer(answer string, part int) error {

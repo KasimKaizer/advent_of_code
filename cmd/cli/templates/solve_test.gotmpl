@@ -2,6 +2,7 @@
 package {{printf "day%s_test" .Day}}
 
 import (
+    "os"
 	"testing"
 	
     // "github.com/KasimKaizer/advent_of_code/pkg/parse"
@@ -10,7 +11,7 @@ import (
 
 type tests struct {
 	Description string
-	Input       any
+	Input       string
 	Expected    any
 }
 
