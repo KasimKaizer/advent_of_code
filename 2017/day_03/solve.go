@@ -82,7 +82,7 @@ type coord struct {
 	x, y int
 }
 
-var dir = [...]coord{ // nolint: all // let this be.
+var dir = [...]coord{ //nolint:gochecknoglobals
 	top:         {0, 1},
 	right:       {1, 0},
 	bottom:      {0, -1},

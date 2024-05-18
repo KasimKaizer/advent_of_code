@@ -3,6 +3,8 @@ package parse
 import (
 	"bufio"
 	"io"
+	"log"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -83,4 +85,16 @@ func ToInt(reader io.Reader) (int, error) {
 func ToString(reader io.Reader) (string, error) {
 	data, err := io.ReadAll(reader)
 	return string(data), err
+}
+
+func NoErrOpen(filePath string) *os.File {
+	f, err := os.Open(filePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return f
+}
+
+func StrToReadCloser(str string) io.ReadCloser {
+	return io.NopCloser(strings.NewReader(str))
 }
