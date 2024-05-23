@@ -1,60 +1,60 @@
-{{define "test"}}//nolint: all
-package {{printf "day%s_test" .Day}}
+// nolint: all
+package day02_test
 
 import (
 	"testing"
-	
-    "github.com/KasimKaizer/advent_of_code/pkg/parse"
-	. "{{printf "github.com/KasimKaizer/advent_of_code/%s/day_%s" .Year .Day}}"
+
+	. "github.com/KasimKaizer/advent_of_code/2015/day_02"
+	"github.com/KasimKaizer/advent_of_code/pkg/parse"
 )
 
 type tests struct {
 	Description string
 	Input       parse.Opener
-	Expected    any
+	Expected    int
 }
 
 var testCasesOne = []tests{
 	{
 		"First example case",
-		parse.NewTextOpener(""),      // add example input here.
-		"",                           // add example expected here.
+		parse.NewTextOpener("2x3x4"), // add example input here.
+		58,                           // add example expected here.
 	},
 
 	{
 		"Second example case",
-		parse.NewTextOpener(""),       // add actual test input here.
-		"",                            // add actual test expected here.
+		parse.NewTextOpener("1x1x10"), // add actual test input here.
+		43,                            // add actual test expected here.
 	},
 
 	{
 		"Problem case",
 		parse.NewFileOpener("input.txt"), // add actual test input here.
-		"",                               // add actual test expected here.
+		1586300,                          // add actual test expected here.
 	},
 }
 
 var testCasesTwo = []tests{
 	{
 		"First example case",
-		parse.NewTextOpener(""),      // add example input here.
-		"",                           // add example expected here.
+		parse.NewTextOpener("2x3x4"), // add example input here.
+		34,                           // add example expected here.
 	},
 
 	{
 		"Second example case",
-		parse.NewTextOpener(""),       // add actual test input here.
-		"",                            // add actual test expected here.
+		parse.NewTextOpener("1x1x10"), // add actual test input here.
+		14,                            // add actual test expected here.
 	},
 
 	{
 		"Problem case",
 		parse.NewFileOpener("input.txt"), // add actual test input here.
-		"",                               // add actual test expected here.
+		3737498,                          // add actual test expected here.
 	},
 }
 
-func runTests(t *testing.T, ops func(any) any, funcName string, tests []tests) {
+func runTests(t *testing.T, ops func([]string) (int, error), funcName string, tests []tests) {
 	for _, tc := range tests {
 		t.Run(tc.Description, func(t *testing.T) {
 			f, err := tc.Input.Open()
@@ -66,7 +66,10 @@ func runTests(t *testing.T, ops func(any) any, funcName string, tests []tests) {
 			if err != nil {
 				t.Error(err)
 			}
-			got := ops(data)
+			got, err := ops(data)
+			if err != nil {
+				t.Error(err)
+			}
 			if got != tc.Expected {
 				t.Fatalf("%s(%v) = %v, expected: %v", funcName, tc.Input, got, tc.Expected)
 			}
@@ -82,7 +85,7 @@ func TestSolveTwo(t *testing.T) {
 	runTests(t, SolveTwo, "SolveTwo", testCasesTwo)
 }
 
-func runBenchmark(b *testing.B, ops func(any) any, test []tests) {
+func runBenchmark(b *testing.B, ops func([]string) (int, error), test []tests) {
 	if testing.Short() {
 		b.Skip("skipping benchmark in short mode.")
 	}
@@ -111,4 +114,3 @@ func BenchmarkSolveOne(b *testing.B) {
 func BenchmarkSolveTwo(b *testing.B) {
 	runBenchmark(b, SolveTwo, testCasesTwo)
 }
-{{end}}

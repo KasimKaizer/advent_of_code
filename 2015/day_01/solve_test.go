@@ -2,7 +2,6 @@
 package day01_test
 
 import (
-	"io"
 	"testing"
 
 	. "github.com/KasimKaizer/advent_of_code/2015/day_01"
@@ -11,51 +10,55 @@ import (
 
 type tests struct {
 	Description string
-	Input       io.ReadCloser
+	Input       parse.Opener
 	Expected    int
 }
 
 var testCasesOne = []tests{
 	{
 		"First example case",
-		parse.StrToReadCloser("(())"), // add example input here.
-		0,                             // add example expected here.
+		parse.NewTextOpener("(())"), // add example input here.
+		0,                           // add example expected here.
 	},
 	{
 		"Second example case",
-		parse.StrToReadCloser("(()(()("), // add example input here.
-		3,                                // add example expected here.
+		parse.NewTextOpener("(()(()("), // add example input here.
+		3,                              // add example expected here.
 	},
 	{
 		"Problem case",
-		parse.NoErrOpen("input.txt"), // add actual test input here.
-		138,                          // add actual test expected here.
+		parse.NewFileOpener("input.txt"), // add actual test input here.
+		138,                              // add actual test expected here.
 	},
 }
 
 var testCasesTwo = []tests{
 	{
 		"First example case",
-		parse.StrToReadCloser(")"), // add example input here.
-		1,                          // add example expected here.
+		parse.NewTextOpener(")"), // add example input here.
+		1,                        // add example expected here.
 	},
 	{
 		"Second example case",
-		parse.StrToReadCloser("()())"), // add example input here.
-		5,                              // add example expected here.
+		parse.NewTextOpener("()())"), // add example input here.
+		5,                            // add example expected here.
 	},
 	{
 		"Problem case",
-		parse.NoErrOpen("input.txt"), // add actual test input here.
-		1771,                         // add actual test expected here.
+		parse.NewFileOpener("input.txt"), // add actual test input here.
+		1771,                             // add actual test expected here.
 	},
 }
 
 func runTests(t *testing.T, ops func(string) int, funcName string, tests []tests) {
 	for _, tc := range tests {
 		t.Run(tc.Description, func(t *testing.T) {
-			defer tc.Input.Close()
-			data, err := parse.ToString(tc.Input)
+			f, err := tc.Input.Open()
+			if err != nil {
+				t.Error(err)
+			}
+			defer f.Close()
+			data, err := parse.ToString(f)
 			if err != nil {
 				t.Error(err)
 			}
@@ -80,12 +83,16 @@ func runBenchmark(b *testing.B, ops func(string) int, test []tests) {
 		b.Skip("skipping benchmark in short mode.")
 	}
 	for _, tc := range test {
+		f, err := tc.Input.Open()
+		if err != nil {
+			b.Error(err)
+		}
+		defer f.Close()
+		data, err := parse.ToString(f)
+		if err != nil {
+			b.Error(err)
+		}
 		b.Run(tc.Description, func(b *testing.B) {
-			// defer tc.Input.Close()
-			data, err := parse.ToString(tc.Input)
-			if err != nil {
-				b.Error(err)
-			}
 			for i := 0; i < b.N; i++ {
 				ops(data)
 			}

@@ -3,7 +3,6 @@ package parse
 import (
 	"bufio"
 	"io"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -78,23 +77,37 @@ func ToInt(reader io.Reader) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	num, err := strconv.Atoi(string(data))
+	num, err := strconv.Atoi(strings.TrimSpace(string(data)))
 	return num, err
 }
 
 func ToString(reader io.Reader) (string, error) {
 	data, err := io.ReadAll(reader)
-	return string(data), err
+	return strings.TrimSpace(string(data)), err
 }
 
-func NoErrOpen(filePath string) *os.File {
-	f, err := os.Open(filePath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return f
+type Opener interface {
+	Open() (io.ReadCloser, error)
 }
 
-func StrToReadCloser(str string) io.ReadCloser {
-	return io.NopCloser(strings.NewReader(str))
+type FileOpener struct {
+	path string
+}
+
+func NewFileOpener(filePath string) *FileOpener {
+	return &FileOpener{path: filePath}
+}
+func (f *FileOpener) Open() (io.ReadCloser, error) {
+	return os.Open(f.path)
+}
+
+type TextOpener struct {
+	text string
+}
+
+func NewTextOpener(text string) *TextOpener {
+	return &TextOpener{text: text}
+}
+func (t *TextOpener) Open() (io.ReadCloser, error) {
+	return io.NopCloser(strings.NewReader(t.text)), nil // error is always nil.
 }

@@ -31,7 +31,7 @@ import (
 // 5) use template to create a basic struct for solving problems. - done somewhat (this would
 //    require trial and error)
 // 8) create a lib dir which implements queue, stack, indexed queue etc etc...
-// 7) create a lib for parsers
+// 7) create a lib for parsers - done (but its a continuously evolving lib)
 
 type Config struct {
 	Year    string
@@ -62,6 +62,9 @@ func main() {
 		log.Fatal("AOC_PATH or AOC_SESSION env variable cannot be empty")
 	}
 
+	if *partNum == 2 {
+		*isSubmit = true
+	}
 	if len(cfg.Day) == 1 {
 		cfg.Day = fmt.Sprintf("0%s", cfg.Day)
 	}
