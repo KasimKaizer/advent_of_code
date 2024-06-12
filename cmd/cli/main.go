@@ -79,7 +79,9 @@ func main() {
 		err := cfg.submitAnswer(*answer, *partNum)
 		handleErr(err)
 		fmt.Printf("Congratulations! You have answered the Part %d correctly!", *partNum) //nolint:forbidigo // needed.
-		os.Exit(0)
+		if *partNum == 2 {
+			os.Exit(0) // exit if its part 2 as there is no need to update readme or base cases.
+		}
 	}
 
 	dirPath := filepath.Join(cfg.path, cfg.Year, fmt.Sprintf("day_%s", cfg.Day))
