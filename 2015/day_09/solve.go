@@ -15,7 +15,7 @@ import (
 // where first [] would be pos and second [] would be mask
 // mask is basically  a binary number indicating nodes we have visited
 // if we haven't visited any nodes then mask would be 00000, and if
-// we have visited all the cities then it would be (1<<n)-1 or 11111
+// we have visited all the nodes then it would be (1<<n)-1 or 11111
 //
 // solution inspired from here: https://github.com/alexchao26/advent-of-code-go/blob/main/2015/day09/main.go
 // and here: https://github.com/KasimKaizer/coding_quest/blob/main/problem_25/shopping.go
@@ -30,10 +30,8 @@ func SolveTwo(input []string) (int, error) {
 	return solve(input, func(x, y int) int { return max(x, y) })
 }
 
-type graph map[string]map[string]int
-
-func newGraph(input []string) (graph, error) {
-	g := make(graph)
+func newGraph(input []string) (map[string]map[string]int, error) {
+	g := make(map[string]map[string]int)
 	for _, inst := range input {
 		data := strings.Fields(inst)
 
@@ -55,9 +53,9 @@ func newGraph(input []string) (graph, error) {
 }
 
 type config struct {
-	graph graph
+	graph map[string]map[string]int
+	mem   map[string]map[int]int
 	lkup  map[string]int
-	mem   [][]int
 	ops   func(int, int) int
 }
 
@@ -67,14 +65,12 @@ func newConfig(input []string, ops func(int, int) int) (*config, error) {
 		return nil, err
 	}
 	lkup := make(map[string]int)
+	mem := make(map[string]map[int]int)
 	idx := 0
-	for key := range g {
-		lkup[key] = idx
+	for k := range g {
+		mem[k] = make(map[int]int)
+		lkup[k] = idx
 		idx++
-	}
-	mem := make([][]int, len(g))
-	for i := range mem {
-		mem[i] = make([]int, 1<<len(g))
 	}
 	return &config{graph: g, lkup: lkup, mem: mem, ops: ops}, nil
 }
@@ -83,10 +79,9 @@ func (c *config) travel(pos string, mask int) int {
 	if mask == (1<<len(c.graph))-1 {
 		return 0
 	}
-	if c.mem[c.lkup[pos]][mask] != 0 {
-		return c.mem[c.lkup[pos]][mask]
+	if c.mem[pos][mask] != 0 {
+		return c.mem[pos][mask]
 	}
-
 	var res int
 	for key := range c.graph {
 		if mask&(1<<c.lkup[key]) != 0 {
@@ -99,7 +94,7 @@ func (c *config) travel(pos string, mask int) int {
 		}
 		res = c.ops(res, dist)
 	}
-	c.mem[c.lkup[pos]][mask] = res
+	c.mem[pos][mask] = res
 	return res
 }
 
