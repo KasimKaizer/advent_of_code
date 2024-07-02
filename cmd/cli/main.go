@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"embed"
 	"errors"
 	"flag"
 	"fmt"
@@ -39,6 +40,9 @@ type Config struct {
 	path    string
 	session string
 }
+
+//go:embed templates/*
+var content embed.FS
 
 func main() {
 	cfg := new(Config)
@@ -78,7 +82,7 @@ func main() {
 		}
 		err := cfg.submitAnswer(*answer, *partNum)
 		handleErr(err)
-		fmt.Printf("Congratulations! You have answered the Part %d correctly!", *partNum) //nolint:forbidigo // needed.
+		fmt.Printf("Congratulations! You have answered the Part %d correctly!\n", *partNum) //nolint:forbidigo // needed.
 		if *partNum == 2 {
 			os.Exit(0) // exit if its part 2 as there is no need to update readme or base cases.
 		}
@@ -158,7 +162,7 @@ func (c *Config) createTemplate(dirPath string) error {
 	}
 	defer solveTestFile.Close()
 
-	ts, err := template.ParseFiles("cmd/cli/templates/solve.gotmpl")
+	ts, err := template.ParseFS(content, "templates/solve.gotmpl")
 	if err != nil {
 		return err
 	}
@@ -167,7 +171,7 @@ func (c *Config) createTemplate(dirPath string) error {
 		return err
 	}
 
-	ts, err = template.ParseFiles("cmd/cli/templates/solve_test.gotmpl")
+	ts, err = template.ParseFS(content, "templates/solve_test.gotmpl")
 	if err != nil {
 		return err
 	}

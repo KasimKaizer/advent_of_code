@@ -3,7 +3,7 @@ package {{printf "day%s_test" .Day}}
 
 import (
 	"testing"
-	
+
     "github.com/KasimKaizer/advent_of_code/pkg/parse"
 	. "{{printf "github.com/KasimKaizer/advent_of_code/%s/day_%s" .Year .Day}}"
 )
@@ -18,19 +18,19 @@ var testCasesOne = []tests{
 	{
 		"First example case",
 		parse.NewTextOpener(""),      // add example input here.
-		"",                           // add example expected here.
+		0,                           // add example expected here.
 	},
 
 	{
 		"Second example case",
 		parse.NewTextOpener(""),       // add actual test input here.
-		"",                            // add actual test expected here.
+		0,                            // add actual test expected here.
 	},
 
 	{
 		"Problem case",
 		parse.NewFileOpener("input.txt"), // add actual test input here.
-		"",                               // add actual test expected here.
+		0,                               // add actual test expected here.
 	},
 }
 
@@ -38,19 +38,19 @@ var testCasesTwo = []tests{
 	{
 		"First example case",
 		parse.NewTextOpener(""),      // add example input here.
-		"",                           // add example expected here.
+		0,                           // add example expected here.
 	},
 
 	{
 		"Second example case",
 		parse.NewTextOpener(""),       // add actual test input here.
-		"",                            // add actual test expected here.
+		0,                            // add actual test expected here.
 	},
 
 	{
 		"Problem case",
 		parse.NewFileOpener("input.txt"), // add actual test input here.
-		"",                               // add actual test expected here.
+		0,                               // add actual test expected here.
 	},
 }
 
