@@ -54,7 +54,7 @@ var testCasesTwo = []tests{
 	},
 }
 
-func runTests(t *testing.T, ops func(any) any, funcName string, tests []tests) {
+func runTests(t *testing.T, ops func(any) (any, error), funcName string, tests []tests) {
 	for _, tc := range tests {
 		t.Run(tc.Description, func(t *testing.T) {
 			f, err := tc.Input.Open()
@@ -66,7 +66,10 @@ func runTests(t *testing.T, ops func(any) any, funcName string, tests []tests) {
 			if err != nil {
 				t.Error(err)
 			}
-			got := ops(data)
+			got, err := ops(data)
+			if err != nil {
+				t.Error(err)
+			}
 			if got != tc.Expected {
 				t.Fatalf("%s(%v) = %v, expected: %v", funcName, tc.Input, got, tc.Expected)
 			}
@@ -82,7 +85,7 @@ func TestSolveTwo(t *testing.T) {
 	runTests(t, SolveTwo, "SolveTwo", testCasesTwo)
 }
 
-func runBenchmark(b *testing.B, ops func(any) any, test []tests) {
+func runBenchmark(b *testing.B, ops func(any) (any, error), test []tests) {
 	if testing.Short() {
 		b.Skip("skipping benchmark in short mode.")
 	}

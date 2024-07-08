@@ -86,6 +86,27 @@ func ToString(reader io.Reader) (string, error) {
 	return strings.TrimSpace(string(data)), err
 }
 
+func ToSplitString(reader io.Reader, sep string) ([]string, error) {
+	data, err := io.ReadAll(reader)
+	return strings.Split(strings.TrimSpace(string(data)), sep), err
+}
+
+func ToSplitInt(reader io.Reader, sep string) ([]int, error) {
+	data, err := ToSplitString(reader, sep)
+	if err != nil {
+		return nil, err
+	}
+	var output []int
+	for _, numChar := range data {
+		num, err := strconv.Atoi(numChar)
+		if err != nil {
+			return nil, err
+		}
+		output = append(output, num)
+	}
+	return output, nil
+}
+
 type Opener interface {
 	Open() (io.ReadCloser, error)
 }
