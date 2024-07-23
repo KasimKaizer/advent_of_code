@@ -1,76 +1,43 @@
 // nolint: all
-package day11_test
+package day12_test
 
 import (
 	"testing"
 
-	. "github.com/KasimKaizer/advent_of_code/2017/day_11"
+	. "github.com/KasimKaizer/advent_of_code/2017/day_12"
 	"github.com/KasimKaizer/advent_of_code/pkg/parse"
 )
 
 type tests struct {
 	Description string
 	Input       parse.Opener
-	Expected    int
+	Expected    any
 }
 
 var testCasesOne = []tests{
+
 	{
 		"First example case",
-		parse.NewTextOpener("ne,ne,ne"), // add example input here.
-		3,                               // add example expected here.
-	},
-
-	{
-		"Second example case",
-		parse.NewTextOpener("ne,ne,sw,sw"), // add actual test input here.
-		0,                                  // add actual test expected here.
-	},
-
-	{
-		"Third example case",
-		parse.NewTextOpener("ne,ne,s,s"), // add actual test input here.
-		2,                                // add actual test expected here.
-	},
-	{
-		"Forth example case",
-		parse.NewTextOpener("se,sw,se,sw,sw"), // add actual test input here.
-		3,                                     // add actual test expected here.
+		parse.NewFileOpener("base_1.txt"), // add example input here.
+		6,                                 // add example expected here.
 	},
 	{
 		"Problem case",
 		parse.NewFileOpener("input.txt"), // add actual test input here.
-		715,                              // add actual test expected here.
+		152,                              // add actual test expected here.
 	},
 }
 
 var testCasesTwo = []tests{
 	{
 		"First example case",
-		parse.NewTextOpener("ne,ne,ne"), // add example input here.
-		3,                               // add example expected here.
-	},
-
-	{
-		"Second example case",
-		parse.NewTextOpener("ne,ne,sw,sw"), // add actual test input here.
-		2,                                  // add actual test expected here.
-	},
-
-	{
-		"Third exampl e case",
-		parse.NewTextOpener("ne,ne,s,s"), // add actual test input here.
-		2,                                // add actual test expected here.
-	},
-	{
-		"Forth example case",
-		parse.NewTextOpener("se,sw,se,sw,sw"), // add actual test input here.
-		3,                                     // add actual test expected here.
+		parse.NewFileOpener("base_1.txt"), // add example input here.
+		2,                                 // add example expected here.
 	},
 	{
 		"Problem case",
 		parse.NewFileOpener("input.txt"), // add actual test input here.
-		1512,                             // add actual test expected here.
+		186,                              // add actual test expected here.
 	},
 }
 
@@ -82,7 +49,7 @@ func runTests(t *testing.T, ops func([]string) (int, error), funcName string, te
 				t.Error(err)
 			}
 			defer f.Close()
-			data, err := parse.ToSplitString(f, ",")
+			data, err := parse.ToStringSlice(f)
 			if err != nil {
 				t.Error(err)
 			}
