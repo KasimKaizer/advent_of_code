@@ -118,6 +118,7 @@ type FileOpener struct {
 func NewFileOpener(filePath string) *FileOpener {
 	return &FileOpener{path: filePath}
 }
+
 func (f *FileOpener) Open() (io.ReadCloser, error) {
 	return os.Open(f.path)
 }
@@ -129,6 +130,7 @@ type TextOpener struct {
 func NewTextOpener(text string) *TextOpener {
 	return &TextOpener{text: text}
 }
+
 func (t *TextOpener) Open() (io.ReadCloser, error) {
 	return io.NopCloser(strings.NewReader(t.text)), nil // error is always nil.
 }
