@@ -1,60 +1,46 @@
-//nolint: all
+// nolint: all
 package day15_test
 
 import (
 	"testing"
 
-    "github.com/KasimKaizer/advent_of_code/pkg/parse"
 	. "github.com/KasimKaizer/advent_of_code/2015/day_15"
+	"github.com/KasimKaizer/advent_of_code/pkg/parse"
 )
 
 type tests struct {
 	Description string
 	Input       parse.Opener
-	Expected    any
+	Expected    int
 }
 
 var testCasesOne = []tests{
 	{
 		"First example case",
-		parse.NewTextOpener(""),      // add example input here.
-		0,                           // add example expected here.
+		parse.NewFileOpener("base_1.txt"), // add example input here.
+		62842880,                          // add example expected here.
 	},
-
-	{
-		"Second example case",
-		parse.NewTextOpener(""),       // add actual test input here.
-		0,                            // add actual test expected here.
-	},
-
 	{
 		"Problem case",
 		parse.NewFileOpener("input.txt"), // add actual test input here.
-		0,                               // add actual test expected here.
+		13882464,                         // add actual test expected here.
 	},
 }
 
 var testCasesTwo = []tests{
 	{
 		"First example case",
-		parse.NewTextOpener(""),      // add example input here.
-		0,                           // add example expected here.
+		parse.NewFileOpener("base_1.txt"), // add example input here.
+		57600000,                          // add example expected here.
 	},
-
-	{
-		"Second example case",
-		parse.NewTextOpener(""),       // add actual test input here.
-		0,                            // add actual test expected here.
-	},
-
 	{
 		"Problem case",
 		parse.NewFileOpener("input.txt"), // add actual test input here.
-		0,                               // add actual test expected here.
+		11171160,                         // add actual test expected here.
 	},
 }
 
-func runTests(t *testing.T, ops func(any) (any, error), funcName string, tests []tests) {
+func runTests(t *testing.T, ops func([]string) (int, error), funcName string, tests []tests) {
 	for _, tc := range tests {
 		t.Run(tc.Description, func(t *testing.T) {
 			f, err := tc.Input.Open()
@@ -85,7 +71,7 @@ func TestSolveTwo(t *testing.T) {
 	runTests(t, SolveTwo, "SolveTwo", testCasesTwo)
 }
 
-func runBenchmark(b *testing.B, ops func(any) (any, error), test []tests) {
+func runBenchmark(b *testing.B, ops func([]string) (int, error), test []tests) {
 	if testing.Short() {
 		b.Skip("skipping benchmark in short mode.")
 	}
