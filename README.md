@@ -49,21 +49,23 @@ The CLI tool in the cmd/cli folder provides several useful features to streamlin
 
 ## Requirements
 
-    Go 1.22.2 or higher 
+Go 1.22.2 or higher 
 
 ## Running the Solutions
 To run a solution for a specific day:
 
-    Navigate to the appropriate year and day directory
-    Run the solution file with Go:
+Navigate to the appropriate year and day directory
+Run the solution file with Go:
 
-    For part one:
+For part one:
+
 ```bash
- go test -v . -run TestSolveOne
+go test -v . -run TestSolveOne
 ```
-    For part two:
+For part two:
+
 ```bash
- go test -v . -run TestSolveTwo
+go test -v . -run TestSolveTwo
 ```
 
 ## About Advent of Code
