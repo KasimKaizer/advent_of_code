@@ -14,7 +14,7 @@ advent_of_code/
 │   │   ├── solve.go
 │   │   ├── solve_test.go
 │   │   └── ...
-│   ├── day02/
+│   ├── day_02/
 │   │   ├── input.txt
 │   │   ├── solve.go
 │   │   ├── solve_test.go

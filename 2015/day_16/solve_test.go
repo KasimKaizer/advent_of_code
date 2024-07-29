@@ -1,50 +1,39 @@
-package day14_test
+// nolint: all
+package day16_test
 
 import (
 	"testing"
 
-	. "github.com/KasimKaizer/advent_of_code/2015/day_14"
+	. "github.com/KasimKaizer/advent_of_code/2015/day_16"
 	"github.com/KasimKaizer/advent_of_code/pkg/parse"
 )
 
 type tests struct {
 	Description string
+	ToSearch    parse.Opener
 	Input       parse.Opener
-	Seconds     int
-	Expected    any
+	Expected    int
 }
 
 var testCasesOne = []tests{
 	{
-		"First example case",
-		parse.NewTextOpener("Comet can fly 14 km/s for 10 seconds, but then must rest for 127 seconds.\nDancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds."), // add example expected here.
-		1000,
-		1120,
-	},
-	{
 		"Problem case",
+		parse.NewFileOpener("base_1.txt"),
 		parse.NewFileOpener("input.txt"), // add actual test input here.
-		2503,
-		2696, // add actual test expected here.
+		103,                              // add actual test expected here.
 	},
 }
 
 var testCasesTwo = []tests{
 	{
-		"First example case",
-		parse.NewTextOpener("Comet can fly 14 km/s for 10 seconds, but then must rest for 127 seconds.\nDancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds."), // add example expected here.
-		1000,
-		689,
-	},
-	{
 		"Problem case",
+		parse.NewFileOpener("base_1.txt"),
 		parse.NewFileOpener("input.txt"), // add actual test input here.
-		2503,
-		1084, // add actual test expected here.
+		405,                              // add actual test expected here.
 	},
 }
 
-func runTests(t *testing.T, ops func([]string, int) (int, error), funcName string, tests []tests) {
+func runTests(t *testing.T, ops func([]string, []string) (int, error), funcName string, tests []tests) {
 	for _, tc := range tests {
 		t.Run(tc.Description, func(t *testing.T) {
 			f, err := tc.Input.Open()
@@ -52,11 +41,20 @@ func runTests(t *testing.T, ops func([]string, int) (int, error), funcName strin
 				t.Error(err)
 			}
 			defer f.Close()
-			data, err := parse.ToStringSlice(f)
+			fc, err := tc.ToSearch.Open()
 			if err != nil {
 				t.Error(err)
 			}
-			got, err := ops(data, tc.Seconds)
+			defer fc.Close()
+			inputData, err := parse.ToStringSlice(f)
+			if err != nil {
+				t.Error(err)
+			}
+			searchData, err := parse.ToStringSlice(fc)
+			if err != nil {
+				t.Error(err)
+			}
+			got, err := ops(searchData, inputData)
 			if err != nil {
 				t.Error(err)
 			}
@@ -75,7 +73,7 @@ func TestSolveTwo(t *testing.T) {
 	runTests(t, SolveTwo, "SolveTwo", testCasesTwo)
 }
 
-func runBenchmark(b *testing.B, ops func([]string, int) (int, error), test []tests) {
+func runBenchmark(b *testing.B, ops func([]string, []string) (int, error), test []tests) {
 	if testing.Short() {
 		b.Skip("skipping benchmark in short mode.")
 	}
@@ -85,13 +83,22 @@ func runBenchmark(b *testing.B, ops func([]string, int) (int, error), test []tes
 			b.Error(err)
 		}
 		defer f.Close()
-		data, err := parse.ToStringSlice(f)
+		fc, err := tc.ToSearch.Open()
+		if err != nil {
+			b.Error(err)
+		}
+		defer fc.Close()
+		inputData, err := parse.ToStringSlice(f)
+		if err != nil {
+			b.Error(err)
+		}
+		searchData, err := parse.ToStringSlice(fc)
 		if err != nil {
 			b.Error(err)
 		}
 		b.Run(tc.Description, func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
-				ops(data, tc.Seconds)
+				ops(searchData, inputData)
 			}
 		})
 	}
