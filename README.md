@@ -1,16 +1,5 @@
 # Advent of Code Solutions in Go
 
-<!--toc:start-->
-- [Advent of Code Solutions in Go](#advent-of-code-solutions-in-go)
-  - [Project Structure](#project-structure)
-  - [CLI Tool](#cli-tool)
-  - [Usage](#usage)
-  - [Running the Solutions](#running-the-solutions)
-  - [About Advent of Code](#about-advent-of-code)
-  - [License](#license)
-  - [Acknowledgements](#acknowledgements)
-<!--toc:end-->
-
 This repository contains my solutions to the Advent of Code challenges implemented in Go. Advent of Code is an annual set of Christmas-themed programming puzzles that can be solved in any programming language.
 
 ## Project Structure
@@ -60,7 +49,7 @@ The CLI tool in the cmd/cli folder provides several useful features to streamlin
 - *Download input data*: Retrieves the input data for the challenge and saves it as input.txt.
 - *Extract base cases*: Automatically identifies and creates files for any example cases found in the problem description.
 
-## Usage
+## CLI Usage
 
 To use the CLI tool, navigate to the cmd/cli directory and run:
 
