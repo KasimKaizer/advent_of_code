@@ -10,12 +10,10 @@ The repository is organized by year and day:
 advent_of_code/
 ├── 2015/
 │   ├── day_01/
-│   │   ├── input.txt
 │   │   ├── solve.go
 │   │   ├── solve_test.go
 │   │   └── ...
 │   ├── day_02/
-│   │   ├── input.txt
 │   │   ├── solve.go
 │   │   ├── solve_test.go
 │   │   └── ...
@@ -37,21 +35,19 @@ advent_of_code/
   - day_XX: Directory for each day's challenge
     - solve.go: Solution implementation
     - solve_test.go: Test cases for the solution
-    - README.md: Problem specification
-    - input.txt: Input data for the challenge
  
 ## CLI Tool
 
-The CLI tool in the cmd/cli folder provides several useful features to streamline your Advent of Code workflow:
+The CLI tool in the cmd/cli folder provides several useful features to streamline the Advent of Code workflow:
 
-- *Create stub files*: Generates solve.go and solve_test.go files with basic structure for new challenges.
-- *Download problem specifications*: Fetches the challenge description and saves it as a README.md file.
-- *Download input data*: Retrieves the input data for the challenge and saves it as input.txt.
-- *Extract base cases*: Automatically identifies and creates files for any example cases found in the problem description.
+- _Create stub files_: Generates solve.go and solve_test.go files with basic structure for new challenges.
+- _Download problem specifications_: Fetches the challenge description and saves it as a README.md file.
+- _Download input data_: Retrieves the input data for the challenge and saves it as input.txt.
+- _Extract base cases_: Automatically identifies and creates files for any example cases found in the problem description.
 
 ## CLI Usage
 
-To use the CLI tool, navigate to the cmd/cli directory and run:
+To use the CLI tool, navigate to  cmd/cli directory and run:
 
 ```bash
 go run main.go [command] [options]

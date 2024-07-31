@@ -18,6 +18,8 @@
 vendor/
 **/.vscode/
 test_files/
+README.md
+input.txt
 
 # Go workspace file
 go.work
