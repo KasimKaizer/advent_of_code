@@ -16,10 +16,14 @@ func SolveOne(input string, limit int) (any, error) {
 	return data[0] * data[1], nil
 }
 
-func SolveTwo(input string, limit int) (any, error) {
-	data := genSeq(limit)
-	seq := append(toASCIISlc(input), 17, 31, 73, 47, 23)
-	tieKnots(data, seq, 64)
+func SolveTwo(input string, _ int) (any, error) {
+	return Encrypt(input)
+}
+
+func Encrypt(input string) (string, error) {
+	data := genSeq(256)
+	key := append(toASCIISlc(input), 17, 31, 73, 47, 23)
+	tieKnots(data, key, 64)
 	var output strings.Builder
 	for _, num := range xorReduce(data) {
 		output.WriteString(fmt.Sprintf("%02x", num))
