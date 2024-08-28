@@ -40,10 +40,10 @@ advent_of_code/
 
 The CLI tool in the cmd/cli folder provides several useful features to streamline the Advent of Code workflow:
 
-- _Create stub files_: Generates solve.go and solve_test.go files with basic structure for new challenges.
-- _Download problem specifications_: Fetches the challenge description and saves it as a README.md file.
-- _Download input data_: Retrieves the input data for the challenge and saves it as input.txt.
-- _Extract base cases_: Automatically identifies and creates files for any example cases found in the problem description.
+- **Create stub files**: Generates solve.go and solve_test.go files with basic structure for new challenges.
+- **Download problem specifications**: Fetches the challenge description and saves it as a README.md file.
+- **Download input data**: Retrieves the input data for the challenge and saves it as input.txt.
+- **Extract base cases**: Automatically identifies and creates files for any example cases found in the problem description.
 
 ## CLI Usage
 
