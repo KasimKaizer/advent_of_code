@@ -1,10 +1,10 @@
 // nolint: all
-package day20_test
+package day21_test
 
 import (
 	"testing"
 
-	. "github.com/KasimKaizer/advent_of_code/2015/day_20"
+	. "github.com/KasimKaizer/advent_of_code/2015/day_21"
 	"github.com/KasimKaizer/advent_of_code/pkg/parse"
 )
 
@@ -17,8 +17,8 @@ type tests struct {
 var testCasesOne = []tests{
 	{
 		"First example case",
-		parse.NewTextOpener("70"), // add example input here.
-		4,                         // add example expected here.
+		parse.NewTextOpener("Hit Points: 12\nDamage: 7\nArmor: 2"), // add example input here.
+		0, // add example expected here.
 	},
 
 	// {
@@ -29,6 +29,12 @@ var testCasesOne = []tests{
 }
 
 var testCasesTwo = []tests{
+	{
+		"First example case",
+		parse.NewTextOpener("Hit Points: 12\nDamage: 7\nArmor: 2"), // add example input here.
+		0, // add example expected here.
+	},
+
 	// {
 	// 	"Problem case",
 	// 	parse.NewFileOpener("input.txt"), // add actual test input here.
@@ -36,7 +42,7 @@ var testCasesTwo = []tests{
 	// },
 }
 
-func runTests(t *testing.T, ops func(int) (int, error), funcName string, tests []tests) {
+func runTests(t *testing.T, ops func([]string) (int, error), funcName string, tests []tests) {
 	for _, tc := range tests {
 		t.Run(tc.Description, func(t *testing.T) {
 			f, err := tc.Input.Open()
@@ -44,7 +50,7 @@ func runTests(t *testing.T, ops func(int) (int, error), funcName string, tests [
 				t.Error(err)
 			}
 			defer f.Close()
-			data, err := parse.ToInt(f)
+			data, err := parse.ToStringSlice(f)
 			if err != nil {
 				t.Error(err)
 			}
@@ -67,7 +73,7 @@ func TestSolveTwo(t *testing.T) {
 	runTests(t, SolveTwo, "SolveTwo", testCasesTwo)
 }
 
-func runBenchmark(b *testing.B, ops func(int) (int, error), test []tests) {
+func runBenchmark(b *testing.B, ops func([]string) (int, error), test []tests) {
 	if testing.Short() {
 		b.Skip("skipping benchmark in short mode.")
 	}
@@ -77,7 +83,7 @@ func runBenchmark(b *testing.B, ops func(int) (int, error), test []tests) {
 			b.Error(err)
 		}
 		defer f.Close()
-		data, err := parse.ToInt(f)
+		data, err := parse.ToStringSlice(f)
 		if err != nil {
 			b.Error(err)
 		}
