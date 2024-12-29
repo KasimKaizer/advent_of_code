@@ -35,11 +35,11 @@ var testCasesTwo = []tests{
 		9,                                 // add example expected here.
 	},
 
-	{
-		"Problem case",
-		parse.NewFileOpener("input.txt"), // add actual test input here.
-		0,                                // add actual test expected here.
-	},
+	// {
+	// 	"Problem case",
+	// 	parse.NewFileOpener("input.txt"), // add actual test input here.
+	// 	0,                                // add actual test expected here.
+	// },
 }
 
 func runTests(t *testing.T, ops func([]string) (int, error), funcName string, tests []tests) {
