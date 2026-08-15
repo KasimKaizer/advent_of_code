@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/KasimKaizer/advent_of_code/pkg/parse"
+	"github.com/KasimKaizer/aoc-cli/parse"
 )
 
 type player struct {

@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	. "github.com/KasimKaizer/advent_of_code/2015/day_14"
-	"github.com/KasimKaizer/advent_of_code/pkg/parse"
+	"github.com/KasimKaizer/aoc-cli/parse"
 )
 
 type tests struct {

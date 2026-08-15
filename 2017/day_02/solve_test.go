@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	. "github.com/KasimKaizer/advent_of_code/2017/day_02"
-	"github.com/KasimKaizer/advent_of_code/pkg/parse"
+	"github.com/KasimKaizer/aoc-cli/parse"
 )
 
 type tests struct {
